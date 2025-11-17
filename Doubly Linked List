@@ -1,0 +1,208 @@
+#include<iostream>
+using namespace std;
+class node {
+	int data;
+	node* next;
+	node* previous;
+public:
+	node(int val = 0, node* ptr = nullptr,node* ptr2= nullptr) {
+		data = val;
+		next = ptr;
+		previous = ptr2;
+	}
+	int retrieve()const { return data; };
+	node* nextnode()const { return next; };
+	node* previousnode()const { return previous; }
+	friend class doubly_LL;
+};
+class doubly_LL {
+	node* head;
+	node* tail;
+public:
+	doubly_LL() {
+		head = tail = nullptr;
+	}
+	~doubly_LL() {
+		
+			while (!empty())
+				pop_front();
+	}
+	//accessors
+	node* Head() const { return head; }
+
+	bool empty() const {
+			return head == nullptr;
+	}
+
+	int front() const {
+			if (empty()) {
+				cout << "List is empty.\n";
+				return -1;
+			}
+			return head->retrieve();
+	}
+
+	int end() const {
+			if (empty()) {
+				cout << "List is empty.\n";
+				return -1;
+			}
+			return tail->retrieve();
+	}
+
+	int size() const {
+			int count = 0;
+			for (node* temp = head; temp != nullptr; temp = temp->next)
+				count++;
+			return count;
+	}
+	void push_front(int val) {
+		node* new_node = new node(val, head,nullptr);
+		//empty list
+		if (head == nullptr) {
+			head = tail = new_node;
+		}
+		// when one element para wa
+		else {
+			new_node->next = head;
+			head->previous = new_node;
+			head = new_node;
+
+		}
+	}
+	void push_back(int val) {
+		node* new_node = new node(val, nullptr,tail);
+		if (head == nullptr) {
+			head = tail = new_node;
+		}
+		else {
+			new_node->previous = tail;
+			tail->next = new_node;
+			tail = new_node;
+		}
+	}
+	void pop_front() {
+		if (head == nullptr) {
+			return;
+		}
+		else {
+			node* temp = head;
+			head = head->next;
+			if (head != nullptr) {
+				head->previous = nullptr;
+			}
+			temp->next = nullptr;
+			delete temp;
+		}
+	}
+	void pop_end() {
+		if (head == nullptr) {
+			return;
+		}
+		else {
+			node* temp = tail;
+			tail = tail->previous;
+			if (tail != nullptr) {
+				tail->next = nullptr;
+			}
+			temp->previous = nullptr;
+			delete temp;
+		}
+		
+	}
+	void insert_middle(int val, int pos) {
+		if (pos < 0) {
+			cout << "Invalid position!" << endl;
+			return;
+		}
+		else if (pos == 0) {
+			push_front(val);
+			return;
+		}
+
+		node* temp = head;
+		for (int i = 0; i < pos - 1 && temp != nullptr; i++) {
+			temp = temp->next;
+		}
+
+		if (temp == nullptr) {
+			cout << "Invalid position!" << endl;
+			return;
+		}
+
+		if (temp == tail) {
+			push_back(val);
+			return;
+		}
+
+		node* new_node = new node(val);
+		new_node->next = temp->next;
+		new_node->previous = temp;
+		temp->next->previous = new_node;
+		temp->next = new_node;
+	}
+
+	
+
+	void erase(int pos) {
+		if (head == nullptr) {
+			cout << "List is empty!" << endl;
+			return;
+		}
+
+		if (pos == 1) {
+			pop_front();
+			return;
+		}
+
+		node* temp = head;
+		int count = 1;
+
+		for (; temp != nullptr && count < pos; temp = temp->next, count++); {
+		}
+
+
+		if (temp == nullptr) {
+			cout << "Invalid position!" << endl;
+			return;
+		}
+
+		if (temp == tail) {
+			pop_end();
+			return;
+		}
+		temp->previous->next = temp->next;
+		temp->next->previous = temp->previous;
+		delete temp;
+	}
+	void display() const {
+		for (node* temp = head; temp != nullptr; temp = temp->next) {
+			cout << temp->data << " ";
+		}
+		cout << endl;
+	}
+
+
+
+};
+int main() {
+	doubly_LL dl;
+	dl.push_front(3);
+	dl.push_front(2);
+	dl.display();
+	dl.push_back(7);
+	dl.push_back(10);
+
+	dl.erase(2);
+	dl.display();
+
+	cout << "Front: " << dl.front() << endl;
+	cout << "End: " << dl.end() << endl;
+	dl.insert_middle(1,2);
+	dl.display();
+	dl.pop_front();
+	dl.pop_end();
+	dl.display();
+	dl.erase(2);
+	dl.display();
+}
