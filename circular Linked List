@@ -1,0 +1,233 @@
+#include<iostream>
+using namespace std;
+class node {
+    int data;
+    node* next;
+    node* prev;
+public:
+    node(int val = 0, node* n = nullptr, node* p = nullptr) {
+        data = val;
+        next = n;
+        prev = p;
+    }
+    int retrieve() const { return data; }
+    node* nextnode() const { return next; }
+    node* prevnode() const { return prev; }
+    friend class CDLL;
+};
+
+class CDLL {
+    node* head;
+    node* tail;
+public:
+    CDLL() {
+        head = nullptr;
+        tail = nullptr;
+    }
+    
+       
+    void push_front(int val) {
+        node* new_node = new node(val);
+
+        if (head == nullptr) {
+            head = tail = new_node;
+            head->next = head;
+            head->prev = head;
+        }
+
+        new_node->next = head;
+        new_node->prev = tail;
+
+        head->prev = new_node;
+        tail->next = new_node;
+
+        head = new_node;
+    }
+    void push_back(int val) {
+        node* new_node = new node(val);
+
+        if (head == nullptr) {
+            head = tail = new_node;
+            head->next = head;
+            head->prev = head;
+            return;
+        }
+
+        new_node->next = head;
+        new_node->prev = tail;
+
+        tail->next = new_node;
+        head->prev = new_node;
+
+        tail = new_node;
+    }
+
+
+    void pop_front() {
+        if (head == nullptr) return;
+
+        if (head == tail) { // single node
+            delete head;
+            head = tail = nullptr;
+        }
+        else {
+            node* temp = head;
+            head = head->next;
+            tail->next = head;
+            temp->next = nullptr;
+            delete temp;
+        }
+    }
+
+    void pop_end() {
+        if (head == nullptr) return;
+
+        if (head == tail) {
+            delete head;
+            head = tail = nullptr;
+        }
+        else {
+            node* temp = tail;
+            tail = tail->prev;
+            tail->next = head;
+            head->prev = tail;
+            delete temp;
+        }
+    }
+
+    void insert_middle(int val, int pos) {
+        if (head == nullptr || pos <= 0) {
+            push_front(val);
+            return;
+        }
+
+        node* temp = head;
+        for (int i = 0; i < pos - 1; i++) {
+            temp = temp->next;
+            if (temp == head) {
+                cout << "Invalid position!\n";
+                return;
+            }
+        }
+
+        if (temp == tail) {
+            push_back(val);
+            return;
+        }
+
+        node* new_node = new node(val);
+        new_node->next = temp->next;
+        new_node->prev = temp;
+        temp->next->prev = new_node;
+        temp->next = new_node;
+    }
+
+    void erase(int pos) {
+        if (head == nullptr) {
+            cout << "List is empty!"<<endl;
+            return;
+        }
+
+        int totalNodes = count();
+        if (pos < 1 || pos > totalNodes) {
+            cout << "Invalid position!" << endl;
+            return;
+        }
+
+        if (pos == 1) {
+            pop_front();
+            return;
+        }
+
+        if (pos == totalNodes) {
+            pop_end();
+            return;
+        }
+
+        node* temp = head;
+        for (int i = 1; i < pos; i++)
+            temp = temp->next;
+
+        temp->prev->next = temp->next;
+        temp->next->prev = temp->prev;
+        delete temp;
+      
+    }
+    bool empty() const {
+        return head == nullptr;
+    }
+
+    int count() const {
+        if (head == nullptr) return 0;
+        int c = 0;
+        node* temp = head;
+        do {
+            c++;
+            temp = temp->next;
+        } while (temp != head);
+        return c;
+    }
+
+    int size() const { 
+        return count();
+    }
+
+    int front() const {
+        if (empty()) {
+            cout << "List empty!" << endl;
+            return -1;
+        }
+        return head->retrieve();
+    }
+
+    int end() const {
+        if (empty()) {
+            cout << "List empty!" << endl;
+            return -1;
+        }
+        return tail->retrieve();
+    }
+
+    void display() const {
+        if (head == nullptr) {
+            cout << "List is empty!" << endl;
+            return;
+        }
+        node* temp;
+
+        for (temp=head;; temp = temp->next) {
+            cout << temp->data << " ";
+
+            if (temp->next == head) 
+                break;
+        }
+        cout << endl;
+    }
+
+
+   
+};
+
+int main() {
+    CDLL cl;
+    cl.push_front(3);
+    cl.push_front(2);
+    cl.push_front(1);
+    cl.push_back(4);
+    cl.display();
+
+    cl.insert_middle(7, 2);
+    cl.display();
+    cl.pop_front();
+    cl.display();
+    cl.pop_end();
+    cl.display();
+    cl.erase(2);
+
+    cl.display();
+
+    cout << "Front = " << cl.front() << endl;
+    cout << "End = " << cl.end() << endl;
+    cout << "Count = " << cl.count() << endl;
+   
+}
