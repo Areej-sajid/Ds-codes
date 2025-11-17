@@ -1,0 +1,100 @@
+#include <iostream>
+using namespace std;
+
+class Node {
+    int data;
+    Node* next;
+public:
+    Node(int val, Node* n = nullptr) {
+        data = val;
+        next = n;
+    }
+    friend class List;
+    friend class Stack;
+
+};
+
+class List {
+    Node* head;
+public:
+    List() {
+        head == nullptr;
+    }
+
+    bool empty() const {
+        return head == nullptr;
+    }
+
+    int front() const {
+        return head->data;
+    }
+
+    void push_front(int val) {
+        Node* newNode = new Node(val, head);
+        head = newNode;
+    }
+
+    int pop_front() {
+        Node* temp = head;
+        int value = temp->data;
+        head = head->next;
+        delete temp;
+        return value;
+    }
+
+    friend class Stack;  
+};
+
+class Stack {
+private:
+    List l;
+
+public:
+    bool empty() const {
+        return l.empty();
+    }
+
+    int top() const {
+        if (empty()) throw runtime_error("Underflow!");
+        return l.front();
+    }
+
+    void push(int obj) {
+        l.push_front(obj);
+    }
+
+    int pop() {
+        if (empty()) throw runtime_error("Underflow!");
+        return l.pop_front();
+    }
+
+    
+    void display() const {
+        if (l.empty()) {
+            cout << "Stack is empty!"<<endl;
+            return;
+        }
+
+        cout << "Stack: ";
+        Node* temp = l.head;   
+
+        while (temp != nullptr) {
+            cout << temp->data << " ";
+            temp = temp->next;
+        }
+        cout << endl;
+    }
+};
+int main() {
+    Stack s;
+    s.push(10);
+    s.push(20);
+    s.push(30);
+    s.display();
+    cout << "Pop: " << s.pop() << endl;
+    s.display();
+    cout << "Top: " << s.top() << endl << endl;
+
+    return 0;
+}
+
