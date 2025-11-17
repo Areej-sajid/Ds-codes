@@ -1,0 +1,206 @@
+#include<iostream>
+using namespace std;
+class node {
+	int data;
+	node* next;
+public:
+	node(int val = 0,node *ptr=nullptr ) {
+		data = val;
+		next = ptr;
+	}
+	int retrieve()const { return data; };
+	node* nextnode()const { return next; };
+	friend class LL;
+};
+class LL {
+	node* head;
+	node* tail;
+public:
+	LL() {
+		head = nullptr;
+	     tail = nullptr;
+	}
+	~LL() {
+		while (!empty())
+			pop_front();
+	}
+	//accessors
+	node* Head() const { return head; }
+
+	bool empty() const {
+		return head == nullptr;
+	}
+
+	int front() const {
+		if (empty()) {
+			cout << "List is empty.\n";
+			return -1;
+		}
+		return head->retrieve();
+	}
+
+	int end() const {
+		if (empty()) {
+			cout << "List is empty.\n";
+			return -1;
+		}
+		return tail->retrieve();
+	}
+
+	int size() const {
+		int count = 0;
+		for (node* temp = head; temp != nullptr; temp = temp->next)
+			count++;
+		return count;
+	}
+	//mutators
+	void push_front(int val) {
+		node* new_node = new node(val,head);
+		//case 1 when list is empty
+		if (head == nullptr) {
+			head = tail = new_node;
+		}
+		//case 2 when one element para wa
+		else {
+			new_node->next = head;
+			head =new_node;
+
+		}
+	}
+	void push_back(int val){
+		node* new_node = new node(val,nullptr);
+		if (head == nullptr) {
+			head = tail = new_node;
+		}
+		else {
+			tail->next = new_node;
+			tail = new_node;
+		}
+	}
+	void pop_front() {
+		if (head == nullptr) {
+			return;
+		}
+		else {
+			node* temp = head;
+			head = head->next;
+			temp->next = nullptr;
+				delete temp;
+		}
+
+	}
+	void pop_end() {
+		if (head == nullptr) {
+			return;
+		}
+		else if (head == tail) {
+			// sirf ek node hai
+			delete head;
+			head = tail = nullptr;
+		}
+		else {
+			node* temp;
+			for (temp = head; temp->next != tail; temp = temp->next) {
+				
+			}
+			temp->next = nullptr;
+			delete tail;
+			tail = temp;
+		}
+		
+	}
+	void insert_middle(int val,int pos) {
+		if (pos < 0) {
+			cout << "Invalid case" << endl;
+			return;
+		}
+		else if (pos == 0) {
+			push_front(val);
+			return;
+		}
+		else {
+			node* temp = head;
+			for (int i = 0; i < pos - 1; i++) {
+				if (temp == nullptr) {
+					cout << "Invalid case" << endl;
+					return;
+				}
+				else {
+					temp = temp->next;
+				}
+			}
+			node* new_node = new node(val);
+			new_node->next = temp->next;
+			temp->next = new_node;
+		}
+	}
+	int search(int key) {
+		node* temp;
+		int idx = 0;
+		for (temp = head; temp != nullptr; temp = temp->next, idx++) {
+			if (temp->data == key) {
+				return idx; // key mil gayi
+			}
+		}
+
+		return -1; // agar key na mile
+	}
+
+
+	void display() const {
+		for (node* temp = head; temp != nullptr; temp = temp->next) {
+			cout << temp->data << " ";
+		}
+		cout << endl;
+	}
+	void erase(int pos) {
+		if (head == nullptr) {
+			cout << "List is empty!" << endl;
+			return;
+		}
+		
+		if (pos == 1) {
+			pop_front();
+			return;
+		}
+		
+		int count = 1;
+		node* temp = head;
+		
+		for (; count < pos - 1 && temp->next != nullptr; temp = temp->next, count++) {
+		}
+
+		// agar position exist nahi karti
+		if (temp->next == nullptr) {
+			cout << "Invalid" << endl;
+			return;
+		}
+		if (temp->next->next == nullptr) {
+			pop_end();
+			return;
+		}
+		node* delNode = temp->next;
+		temp->next = delNode->next;
+		delete delNode;
+	}
+
+};
+int main() {
+	LL ll;
+	 ll.push_front(3);
+	 ll.push_front(2);
+	 ll.push_front(1);
+	 ll.push_back(4);
+	 cout << "Front: " << ll.front() << endl;
+	 cout << "End: " << ll.end() << endl;
+	 ll.display();
+	 
+	 ll.insert_middle(7, 2);
+	 
+	 ll.display();
+	 ll.pop_front();
+	 ll.pop_end();
+	 ll.erase(2);
+	 ll.display();
+}
+
