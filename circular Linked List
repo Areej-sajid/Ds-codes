@@ -1,80 +1,69 @@
 #include<iostream>
 using namespace std;
+
+template<typename T>
 class node {
-    int data;
+    T data;
     node* next;
-    node* prev;
 public:
-    node(int val = 0, node* n = nullptr, node* p = nullptr) {
+    node(T val = 0, node* n = nullptr) {
         data = val;
         next = n;
-        prev = p;
     }
-    int retrieve() const { return data; }
+    T retrieve() const { return data; }
     node* nextnode() const { return next; }
-    node* prevnode() const { return prev; }
-    friend class CDLL;
+    friend class CSLL<T>;
 };
 
-class CDLL {
-    node* head;
-    node* tail;
+template<typename T>
+class CSLL {
+    node<T>* head;
+    node<T>* tail;
 public:
-    CDLL() {
+    CSLL() {
         head = nullptr;
         tail = nullptr;
     }
-    
-       
-    void push_front(int val) {
-        node* new_node = new node(val);
+
+    void push_front(T val) {
+        node<T>* new_node = new node<T>(val);
 
         if (head == nullptr) {
             head = tail = new_node;
             head->next = head;
-            head->prev = head;
-        }
-
-        new_node->next = head;
-        new_node->prev = tail;
-
-        head->prev = new_node;
-        tail->next = new_node;
-
-        head = new_node;
-    }
-    void push_back(int val) {
-        node* new_node = new node(val);
-
-        if (head == nullptr) {
-            head = tail = new_node;
-            head->next = head;
-            head->prev = head;
             return;
         }
 
         new_node->next = head;
-        new_node->prev = tail;
-
         tail->next = new_node;
-        head->prev = new_node;
-
-        tail = new_node;
+        head = new_node;
     }
 
+    void push_back(T val) {
+        node<T>* new_node = new node<T>(val);
+
+        if (head == nullptr) {
+            head = tail = new_node;
+            head->next = head;
+            return;
+        }
+
+        new_node->next = head;
+        tail->next = new_node;
+        tail = new_node;
+    }
 
     void pop_front() {
         if (head == nullptr) return;
 
-        if (head == tail) { // single node
+        if (head == tail) {
             delete head;
             head = tail = nullptr;
         }
         else {
-            node* temp = head;
+            node<T>* temp = head;
             head = head->next;
             tail->next = head;
-            temp->next = nullptr;
             delete temp;
         }
     }
@@ -87,21 +76,23 @@ public:
             head = tail = nullptr;
         }
         else {
-            node* temp = tail;
-            tail = tail->prev;
-            tail->next = head;
-            head->prev = tail;
-            delete temp;
+            node<T>* temp = head;
+            while (temp->next != tail)
+                temp = temp->next;
+
+            temp->next = head;
+            delete tail;
+            tail = temp;
         }
     }
 
-    void insert_middle(int val, int pos) {
+    void insert_middle(T val, int pos) {
         if (head == nullptr || pos <= 0) {
             push_front(val);
             return;
         }
 
-        node* temp = head;
+        node<T>* temp = head;
         for (int i = 0; i < pos - 1; i++) {
             temp = temp->next;
             if (temp == head) {
@@ -115,22 +106,20 @@ public:
             return;
         }
 
-        node* new_node = new node(val);
+        node<T>* new_node = new node<T>(val);
         new_node->next = temp->next;
-        new_node->prev = temp;
-        temp->next->prev = new_node;
         temp->next = new_node;
     }
 
     void erase(int pos) {
         if (head == nullptr) {
-            cout << "List is empty!"<<endl;
+            cout << "List is empty!" << endl;
             return;
         }
 
         int totalNodes = count();
         if (pos < 1 || pos > totalNodes) {
-            cout << "Invalid position!" << endl;
+            cout << "Invalid position" << endl;
             return;
         }
 
@@ -144,15 +133,15 @@ public:
             return;
         }
 
-        node* temp = head;
-        for (int i = 1; i < pos; i++)
+        node<T>* temp = head;
+        for (int i = 1; i < pos - 1; i++)
             temp = temp->next;
 
-        temp->prev->next = temp->next;
-        temp->next->prev = temp->prev;
-        delete temp;
-      
+        node<T>* del = temp->next;
+        temp->next = del->next;
+        delete del;
     }
+
     bool empty() const {
         return head == nullptr;
     }
@@ -160,7 +149,7 @@ public:
     int count() const {
         if (head == nullptr) return 0;
         int c = 0;
-        node* temp = head;
+        node<T>* temp = head;
         do {
             c++;
             temp = temp->next;
@@ -168,48 +157,45 @@ public:
         return c;
     }
 
-    int size() const { 
+    int size() const {
         return count();
     }
 
-    int front() const {
+    T front() const {
         if (empty()) {
-            cout << "List empty!" << endl;
-            return -1;
+            cout << "List empty" << endl;
+            return 0;
         }
         return head->retrieve();
     }
 
-    int end() const {
+    T end() const {
         if (empty()) {
-            cout << "List empty!" << endl;
-            return -1;
+            cout << "List empty" << endl;
+            return 0;
         }
         return tail->retrieve();
     }
 
-    void display() const {
+   void display() const {
         if (head == nullptr) {
-            cout << "List is empty!" << endl;
+            cout << "List is empty" << endl;
             return;
         }
-        node* temp;
 
-        for (temp=head;; temp = temp->next) {
-            cout << temp->data << " ";
+        node<T>* temp = head;
 
-            if (temp->next == head) 
-                break;
+        for (; ; temp = temp->next) {
+            cout << temp->retrieve() << " ";
+            if (temp->next == head) break;
         }
+
         cout << endl;
     }
-
-
-   
 };
 
 int main() {
-    CDLL cl;
+    CSLL<int> cl;
     cl.push_front(3);
     cl.push_front(2);
     cl.push_front(1);
@@ -226,8 +212,7 @@ int main() {
 
     cl.display();
 
-    cout << "Front = " << cl.front() << endl;
-    cout << "End = " << cl.end() << endl;
-    cout << "Count = " << cl.count() << endl;
-   
+    cout << "Front " << cl.front() << endl;
+    cout << "End" << cl.end() << endl;
+    cout << "Count " << cl.count() << endl;
 }
