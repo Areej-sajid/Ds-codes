@@ -1,61 +1,62 @@
 #include<iostream>
 using namespace std;
+
+template <typename T>
 class node {
-	int data;
-	node* next;
+	T data;
+	node<T>* next;
 public:
-	node(int val = 0,node *ptr=nullptr ) {
+	node(T val = T(), node<T>* ptr = nullptr) {
 		data = val;
 		next = ptr;
 	}
-	int retrieve()const { return data; };
-	node* nextnode()const { return next; };
+	T retrieve() const { return data; }
+	node<T>* nextnode() const { return next; }
+	template <typename U>
 	friend class LL;
 };
+
+template <typename T>
 class LL {
-	node* head;
-	node* tail;
+	node<T>* head;
+	node<T>* tail;
 public:
 	LL() {
 		head = nullptr;
-	     tail = nullptr;
+		tail = nullptr;
 	}
 	~LL() {
 		while (!empty())
 			pop_front();
 	}
 	//accessors
-	node* Head() const { return head; }
-
+	node<T>* Head() const { return head; }
 	bool empty() const {
 		return head == nullptr;
 	}
-
-	int front() const {
+	T front() const {
 		if (empty()) {
-			cout << "List is empty.\n";
-			return -1;
+			cout << "List is empty.";
+			return 0;
 		}
 		return head->retrieve();
 	}
-
-	int end() const {
+	T end() const {
 		if (empty()) {
-			cout << "List is empty.\n";
-			return -1;
+			cout << "List is empty.";
+			return 0;
 		}
 		return tail->retrieve();
 	}
-
 	int size() const {
 		int count = 0;
-		for (node* temp = head; temp != nullptr; temp = temp->next)
+		for (node<T>* temp = head; temp != nullptr; temp = temp->next)
 			count++;
 		return count;
 	}
 	//mutators
-	void push_front(int val) {
-		node* new_node = new node(val,head);
+	void push_front(T val) {
+		node<T>* new_node = new node<T>(val, head);
 		//case 1 when list is empty
 		if (head == nullptr) {
 			head = tail = new_node;
@@ -63,12 +64,11 @@ public:
 		//case 2 when one element para wa
 		else {
 			new_node->next = head;
-			head =new_node;
-
+			head = new_node;
 		}
 	}
-	void push_back(int val){
-		node* new_node = new node(val,nullptr);
+	void push_back(T val) {
+		node<T>* new_node = new node<T>(val, nullptr);
 		if (head == nullptr) {
 			head = tail = new_node;
 		}
@@ -82,12 +82,11 @@ public:
 			return;
 		}
 		else {
-			node* temp = head;
+			node<T>* temp = head;
 			head = head->next;
 			temp->next = nullptr;
-				delete temp;
+			delete temp;
 		}
-
 	}
 	void pop_end() {
 		if (head == nullptr) {
@@ -99,17 +98,17 @@ public:
 			head = tail = nullptr;
 		}
 		else {
-			node* temp;
+			node<T>* temp;
 			for (temp = head; temp->next != tail; temp = temp->next) {
-				
+
 			}
 			temp->next = nullptr;
 			delete tail;
 			tail = temp;
 		}
-		
+
 	}
-	void insert_middle(int val,int pos) {
+	void insert_middle(T val, int pos) {
 		if (pos < 0) {
 			cout << "Invalid case" << endl;
 			return;
@@ -119,7 +118,7 @@ public:
 			return;
 		}
 		else {
-			node* temp = head;
+			node<T>* temp = head;
 			for (int i = 0; i < pos - 1; i++) {
 				if (temp == nullptr) {
 					cout << "Invalid case" << endl;
@@ -129,47 +128,43 @@ public:
 					temp = temp->next;
 				}
 			}
-			node* new_node = new node(val);
+			node<T>* new_node = new node<T>(val);
 			new_node->next = temp->next;
 			temp->next = new_node;
 		}
 	}
-	int search(int key) {
-		node* temp;
+	int search(T key) {
+		node<T>* temp;
 		int idx = 0;
 		for (temp = head; temp != nullptr; temp = temp->next, idx++) {
 			if (temp->data == key) {
 				return idx; // key mil gayi
 			}
 		}
-
-		return -1; // agar key na mile
+		return 0; // agar key na mile
 	}
-
-
 	void display() const {
-		for (node* temp = head; temp != nullptr; temp = temp->next) {
+		for (node<T>* temp = head; temp != nullptr; temp = temp->next) {
 			cout << temp->data << " ";
 		}
 		cout << endl;
 	}
 	void erase(int pos) {
 		if (head == nullptr) {
-			cout << "List is empty!" << endl;
+			cout << "List is empty" << endl;
 			return;
 		}
-		
+
 		if (pos == 1) {
 			pop_front();
 			return;
 		}
-		
+
 		int count = 1;
-		node* temp = head;
-		
+		node<T>* temp = head;
+
 		for (; count < pos - 1 && temp->next != nullptr; temp = temp->next, count++) {
 		}
-
 		// agar position exist nahi karti
 		if (temp->next == nullptr) {
 			cout << "Invalid" << endl;
@@ -179,28 +174,27 @@ public:
 			pop_end();
 			return;
 		}
-		node* delNode = temp->next;
+		node<T>* delNode = temp->next;
 		temp->next = delNode->next;
 		delete delNode;
 	}
-
 };
-int main() {
-	LL ll;
-	 ll.push_front(3);
-	 ll.push_front(2);
-	 ll.push_front(1);
-	 ll.push_back(4);
-	 cout << "Front: " << ll.front() << endl;
-	 cout << "End: " << ll.end() << endl;
-	 ll.display();
-	 
-	 ll.insert_middle(7, 2);
-	 
-	 ll.display();
-	 ll.pop_front();
-	 ll.pop_end();
-	 ll.erase(2);
-	 ll.display();
-}
 
+int main() {
+	LL<int> ll;
+	ll.push_front(3);
+	ll.push_front(2);
+	ll.push_front(1);
+	ll.push_back(4);
+	cout << "Front: " << ll.front() << endl;
+	cout << "End: " << ll.end() << endl;
+	ll.display();
+
+	ll.insert_middle(7, 2);
+
+	ll.display();
+	ll.pop_front();
+	ll.pop_end();
+	ll.erase(2);
+	ll.display();
+}
