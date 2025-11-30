@@ -8,62 +8,90 @@ private:
     int* array;
 
 public:
-    StackArray(int n = 10)
-        : stack_size(0),
-        array_capacity(max(1, n)),
-        array(new int[array_capacity]) {
+    StackArray(int n = 10) {
+        stack_size = 0;
+        if (n < 1) {
+            n = 1;
+        }
+        array_capacity = n;
+        array = new int[array_capacity];
     }
-
+    
     ~StackArray() {
         delete[] array;
     }
-
+    
     bool empty() const {
         return stack_size == 0;
     }
-
+    
     int top() const {
-        if (empty()) throw runtime_error("Underflow!");
+        if (empty()) {
+            cout << "Stack is empty" << endl;
+            return 0;
+        }
         return array[stack_size - 1];
     }
-
+    
     void push(int obj) {
-        if (stack_size == array_capacity)
-            throw runtime_error("Overflow!");
-
+        if (stack_size == array_capacity) {
+            doubleCapacity();
+        }
         array[stack_size] = obj;
         stack_size++;
     }
-
+    
     int pop() {
-        if (empty()) throw runtime_error("Underflow!");
+        if (empty()) {
+            cout << "Stack is empty" << endl;
+            return 0;
+        }
         stack_size--;
         return array[stack_size];
     }
-
     
     void display() const {
         if (empty()) {
-            cout << "Stack is empty"<<endl;
+            cout << "Stack is empty" << endl;
             return;
         }
-
         cout << "Stack: ";
         for (int i = stack_size - 1; i >= 0; --i) {
             cout << array[i] << " ";
         }
         cout << endl;
     }
+    
+    void doubleCapacity() {
+        array_capacity *= 2;
+        int* new_array = new int[array_capacity];
+        
+        for (int i = 0; i < stack_size; i++) {
+            new_array[i] = array[i];
+        }
+        
+        delete[] array;
+        array = new_array;
+        cout << "Capacity doubled to: " << array_capacity << endl;
+    }
 };
+
 int main() {
-    StackArray st;
+    StackArray st(3);
+    
     st.push(5);
     st.push(15);
     st.push(25);
     st.display();
+    
+    st.push(35);
+    st.push(45);
+    st.display();
+    
     cout << "Pop: " << st.pop() << endl;
     st.display();
+    
     cout << "Top: " << st.top() << endl;
-
+    
     return 0;
 }
