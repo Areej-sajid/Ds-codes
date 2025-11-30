@@ -55,7 +55,7 @@ public:
     }
 
     int top() const {
-        if (empty()) throw runtime_error("Underflow!");
+        if (empty()) {throw underflow();}
         return l.front();
     }
 
@@ -64,14 +64,14 @@ public:
     }
 
     int pop() {
-        if (empty()) throw runtime_error("Underflow!");
+        if (empty()) {throw underflow();}
         return l.pop_front();
     }
 
     
     void display() const {
         if (l.empty()) {
-            cout << "Stack is empty!"<<endl;
+            cout << "Stack is empty"<<endl;
             return;
         }
 
